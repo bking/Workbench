@@ -9,6 +9,15 @@ benchtopWidth = 60;
 benchtopDepth = 36;
 benchtopHeight = 36;
 
+// Distance from the floor to the bottom crossbars
+bottomClearance = 6;
+
+// Insets of the legs from the edges of the benchtop
+iLeft = 6;
+iRight = 6;
+iFront = 0;
+iBack = 0;
+
 
 // Legs are 2 boards glued together
 legDepth = 2 * boardThickness;
@@ -31,7 +40,8 @@ module board(length = 96) {
 
 // The top of the bench. Boards are stacked vertically to
 // create a top the thickness of the board width (3.5" for a 2x4)
-
+benchtopBoardCount = benchtopDepth / boardThickness;
+echo(benchtopBoardCount=benchtopBoardCount);
 module benchtop() {
     for (i = [0:boardThickness:benchtopDepth - boardThickness]) {
         translate([0, i, 0]) {
@@ -48,8 +58,18 @@ module leg(legHeight = frameHeight) {
     translate([0, boardThickness, 0]) rotate([0, 270, 0]) board(legHeight);
 }
 
+module crossbars() {
+    crossbarWidth = benchtopWidth - iLeft - iRight;
+    crossbarDepth = benchtopDepth - iBack - iFront;
+
+    translate([iLeft, iFront, 0]) board(crossbarWidth);
+    translate([iLeft, benchtopDepth - iBack - boardThickness, 0]) board(crossbarWidth);
+    translate([iLeft, iFront, 0]) rotate([0, 0, 90]) board(crossbarDepth);
+    translate([benchtopWidth - iRight + boardThickness, iFront, 0]) rotate([0, 0, 90]) board(crossbarDepth);
+}
+
 // Creates the frame with legs inset to the argument values
-module frame(iLeft = 0, iRight = 0, iFront = 0, iBack = 0) {
+module frame() {
     // 4 legs
     translate([iLeft + legWidth, iFront, 0]) leg();
     translate([benchtopWidth - iRight, benchtopDepth - legDepth - iBack, 0]) leg();
@@ -57,11 +77,10 @@ module frame(iLeft = 0, iRight = 0, iFront = 0, iBack = 0) {
     translate([iLeft + legWidth, benchtopDepth - iBack - legDepth, 0]) leg();
 
     // Crossbars
-    crossbarWidth = benchtopWidth - iLeft - iRight;
-    translate([iLeft, iFront, legDepth]) board(crossbarWidth);
-    translate([iLeft, benchtopDepth - iBack - boardThickness, legDepth]) board(crossbarWidth);
+    translate([0, 0, bottomClearance]) crossbars(iLeft, iRight, iFront, iBack);
+    translate([0, 0, frameHeight - boardWidth]) crossbars(iLeft, iRight, iFront, iBack);
 }
 
 // Draw it all
 color("BurlyWood") translate([0, 0, benchtopHeight - boardWidth]) benchtop();
-color("BurlyWood") frame();//iLeft=6, iRight=6);
+color("BurlyWood") frame();
