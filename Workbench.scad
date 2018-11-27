@@ -5,13 +5,13 @@ boardWidth = 3.5;
 boardThickness = 1.5;
 
 // 24 2x4 boards make the top. The boards are really 1.5"x3.5" tho.
-benchtopWidth = 48;
+benchtopWidth = 60;
 benchtopDepth = 36;
 benchtopHeight = 36;
 
 
 // Legs are 2 boards glued together
-legThickness = 2 * boardThickness;
+legDepth = 2 * boardThickness;
 legWidth = boardWidth;
 
 // frameHeight is the height of the frame. The benchtop sits on top of
@@ -44,24 +44,24 @@ module benchtop() {
 
 // One leg = 2 boards together
 module leg(legHeight = frameHeight) {
-    rotate([0, 270, 270]) board(legHeight);
-    translate([boardThickness, 0, 0]) rotate([0, 270, 270]) board(legHeight);
+    rotate([0, 270, 0]) board(legHeight);
+    translate([0, boardThickness, 0]) rotate([0, 270, 0]) board(legHeight);
 }
 
-module frame() {
-    // How much we want to be inset from the benchtop edges
-    iLeft = 4;
-    iRight = 4;
-    iFront = 6;
-    iBack = 0;
-
+// Creates the frame with legs inset to the argument values
+module frame(iLeft = 0, iRight = 0, iFront = 0, iBack = 0) {
     // 4 legs
-    translate([iLeft, iFront, 0]) leg();
-    translate([benchtopWidth - legThickness - iLeft, benchtopDepth - boardWidth - iBack, 0]) leg();
-    translate([benchtopWidth - legThickness - iRight, iFront, 0]) leg();
-    translate([iLeft, benchtopDepth - boardWidth - iBack, 0]) leg();
+    translate([iLeft + legWidth, iFront, 0]) leg();
+    translate([benchtopWidth - iRight, benchtopDepth - legDepth - iBack, 0]) leg();
+    translate([benchtopWidth - iRight, iFront, 0]) leg();
+    translate([iLeft + legWidth, benchtopDepth - iBack - legDepth, 0]) leg();
+
+    // Crossbars
+    crossbarWidth = benchtopWidth - iLeft - iRight;
+    translate([iLeft, iFront, legDepth]) board(crossbarWidth);
+    translate([iLeft, benchtopDepth - iBack - boardThickness, legDepth]) board(crossbarWidth);
 }
 
 // Draw it all
 color("BurlyWood") translate([0, 0, benchtopHeight - boardWidth]) benchtop();
-color("BurlyWood") frame();
+color("BurlyWood") frame();//iLeft=6, iRight=6);
