@@ -5,9 +5,9 @@ boardWidth = 3.5;
 boardThickness = 1.5;
 
 // 24 2x4 boards make the top. The boards are really 1.5"x3.5" tho.
-benchtopWidth = 60;
-benchtopDepth = 36;
-benchtopHeight = 36;
+benchtopWidth = 60;  // 5' 
+benchtopDepth = 36;  // 3'
+benchtopHeight = 36; // 3'
 
 // Distance from the floor to the bottom crossbars
 bottomClearance = 6;
