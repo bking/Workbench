@@ -53,7 +53,7 @@ module benchtop() {
 }
 
 // One leg = 2 boards together
-module leg(legHeight = frameHeight) {
+module leg(legHeight = frameHeight - boardThickness) {
     rotate([0, 270, 0]) board(legHeight);
     translate([0, boardThickness, 0]) rotate([0, 270, 0]) board(legHeight);
 }
@@ -68,6 +68,16 @@ module crossbars() {
     translate([benchtopWidth - iRight + boardThickness, iFront, 0]) rotate([0, 0, 90]) board(crossbarDepth);
 }
 
+module topbars() {
+    topbarWidth = benchtopWidth - iLeft - iRight;
+    topbarDepth = benchtopDepth - iBack - iFront;
+
+    translate([iLeft + (boardWidth / 2), iFront + boardWidth, 0]) rotate([90, 0, 0]) board(topbarWidth - boardWidth);
+    translate([iLeft + (boardWidth / 2), benchtopDepth - iBack, 0]) rotate([90, 0, 0]) board(topbarWidth - boardWidth);
+    translate([iLeft, iFront, 0]) rotate([90, 0, 90]) board(topbarDepth);
+    translate([benchtopWidth - iRight - boardWidth, iFront, 0]) rotate([90, 0, 90]) board(topbarDepth);
+}
+
 // Creates the frame with legs inset to the argument values
 module frame() {
     // 4 legs
@@ -78,7 +88,7 @@ module frame() {
 
     // Crossbars
     translate([0, 0, bottomClearance]) crossbars(iLeft, iRight, iFront, iBack);
-    translate([0, 0, frameHeight - boardWidth]) crossbars(iLeft, iRight, iFront, iBack);
+    translate([0, 0, frameHeight - boardThickness]) topbars(iLeft, iRight, iFront, iBack);
 }
 
 // Draw it all
