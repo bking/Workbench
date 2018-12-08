@@ -6,7 +6,7 @@ boardThickness = 1.5;
 
 // 24 2x4 boards make the top. The boards are really 1.5"x3.5" tho.
 benchtopWidth = 60;  // 5' 
-benchtopDepth = 36;  // 3'
+benchtopDepth = 38.5;  // 3'
 benchtopHeight = 36; // 3'
 
 // Distance from the floor to the bottom crossbars
@@ -30,7 +30,7 @@ frameHeight = benchtopHeight - boardWidth;
 // Scaling for the boards placed in the benchtop. Setting this to
 // something smaller than 1 will show the individual boards used to
 // make the top.
-scaleFactor=0.9;
+scaleFactor=0.95;
 
 // A 2x4 board (actually 1.5"x3.5")
 module board(length = 96) {
@@ -40,11 +40,12 @@ module board(length = 96) {
 
 // The top of the bench. Boards are stacked vertically to
 // create a top the thickness of the board width (3.5" for a 2x4)
-benchtopBoardCount = benchtopDepth / boardThickness;
+benchtopBoardCount = benchtopDepth / boardWidth;
 echo(benchtopBoardCount=benchtopBoardCount);
 module benchtop() {
-    for (i = [0:boardThickness:benchtopDepth - boardThickness]) {
-        translate([0, i, 0]) {
+    for (i = [0:boardWidth:benchtopDepth - boardWidth]) {
+        translate([0, i + boardWidth, 0]) {
+            rotate([90, 0, 0]) 
             scale([1, scaleFactor, scaleFactor]) {
                 board(benchtopWidth);
             }
@@ -59,6 +60,7 @@ module leg(legHeight = frameHeight - boardThickness) {
 }
 
 module crossbars() {
+    echo ("Crossbars");
     crossbarWidth = benchtopWidth - iLeft - iRight;
     crossbarDepth = benchtopDepth - iBack - iFront;
 
@@ -69,11 +71,13 @@ module crossbars() {
 }
 
 module topbars() {
+    echo("Top bars");
     topbarWidth = benchtopWidth - iLeft - iRight;
     topbarDepth = benchtopDepth - iBack - iFront;
 
-    translate([iLeft + (boardWidth / 2), iFront + boardWidth, 0]) rotate([90, 0, 0]) board(topbarWidth - boardWidth);
-    translate([iLeft + (boardWidth / 2), benchtopDepth - iBack, 0]) rotate([90, 0, 0]) board(topbarWidth - boardWidth);
+    // These are cut with 45 degree ends
+    translate([iLeft, iFront + boardWidth, 0]) rotate([90, 0, 0]) board(topbarWidth);
+    translate([iLeft, benchtopDepth - iBack, 0]) rotate([90, 0, 0]) board(topbarWidth);
     translate([iLeft, iFront, 0]) rotate([90, 0, 90]) board(topbarDepth);
     translate([benchtopWidth - iRight - boardWidth, iFront, 0]) rotate([90, 0, 90]) board(topbarDepth);
 }
@@ -81,6 +85,7 @@ module topbars() {
 // Creates the frame with legs inset to the argument values
 module frame() {
     // 4 legs
+    echo ("Legs");
     translate([iLeft + legWidth, iFront, 0]) leg();
     translate([benchtopWidth - iRight, benchtopDepth - legDepth - iBack, 0]) leg();
     translate([benchtopWidth - iRight, iFront, 0]) leg();
@@ -92,5 +97,5 @@ module frame() {
 }
 
 // Draw it all
-color("BurlyWood") translate([0, 0, benchtopHeight - boardWidth]) benchtop();
+color("Green") translate([0, 0, benchtopHeight - boardWidth]) benchtop();
 color("BurlyWood") frame();
